@@ -1,3 +1,3 @@
 prefix      = "tb"
-project     = "tykbroker-app"
+project     = "terraform_tykbroker"
 environment = "development"

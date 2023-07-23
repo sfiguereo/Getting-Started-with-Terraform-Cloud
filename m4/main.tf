@@ -8,10 +8,10 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region     = var.region
   default_tags {
     tags = {
-      Owner       = "Globomantics"
+      Owner       = "Stagewood_Consortium"
       Project     = var.project
       Environment = var.environment
     }
@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 
-resource "aws_vpc" "diamond_dogs" {
+resource "aws_vpc" "tykbroker_app" {
   cidr_block           = var.address_space
   enable_dns_hostnames = true
 
@@ -29,8 +29,8 @@ resource "aws_vpc" "diamond_dogs" {
   }
 }
 
-resource "aws_subnet" "diamond_dogs" {
-  vpc_id     = aws_vpc.diamond_dogs.id
+resource "aws_subnet" "tykbroker_app" {
+  vpc_id     = aws_vpc.tykbroker_app.id
   cidr_block = var.subnet_prefix
 
   tags = {
@@ -38,10 +38,10 @@ resource "aws_subnet" "diamond_dogs" {
   }
 }
 
-resource "aws_security_group" "diamond_dogs" {
+resource "aws_security_group" "tykbroker_app" {
   name = "${var.prefix}-security-group"
 
-  vpc_id = aws_vpc.diamond_dogs.id
+  vpc_id = aws_vpc.tykbroker_app.id
 
   ingress {
     from_port   = 80
@@ -69,26 +69,26 @@ resource "aws_security_group" "diamond_dogs" {
   }
 }
 
-resource "aws_internet_gateway" "diamond_dogs" {
-  vpc_id = aws_vpc.diamond_dogs.id
+resource "aws_internet_gateway" "tykbroker_app" {
+  vpc_id = aws_vpc.tykbroker_app.id
 
   tags = {
     Name = "${var.prefix}-internet-gateway"
   }
 }
 
-resource "aws_route_table" "diamond_dogs" {
-  vpc_id = aws_vpc.diamond_dogs.id
+resource "aws_route_table" "tykbroker_app" {
+  vpc_id = aws_vpc.tykbroker_app.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.diamond_dogs.id
+    gateway_id = aws_internet_gateway.tykbroker_app.id
   }
 }
 
-resource "aws_route_table_association" "diamond_dogs" {
-  subnet_id      = aws_subnet.diamond_dogs.id
-  route_table_id = aws_route_table.diamond_dogs.id
+resource "aws_route_table_association" "tykbroker_app" {
+  subnet_id      = aws_subnet.tykbroker_app.id
+  route_table_id = aws_route_table.tykbroker_app.id
 }
 
 data "aws_ami" "ubuntu" {
@@ -107,22 +107,22 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_eip" "diamond_dogs" {
-  instance = aws_instance.diamond_dogs.id
+resource "aws_eip" "tykbroker_app" {
+  instance = aws_instance.tykbroker_app.id
   vpc      = true
 }
 
-resource "aws_eip_association" "diamond_dogs" {
-  instance_id   = aws_instance.diamond_dogs.id
-  allocation_id = aws_eip.diamond_dogs.id
+resource "aws_eip_association" "tykbroker_app" {
+  instance_id   = aws_instance.tykbroker_app.id
+  allocation_id = aws_eip.tykbroker_app.id
 }
 
-resource "aws_instance" "diamond_dogs" {
+resource "aws_instance" "tykbroker_app" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   associate_public_ip_address = true
-  subnet_id                   = aws_subnet.diamond_dogs.id
-  vpc_security_group_ids      = [aws_security_group.diamond_dogs.id]
+  subnet_id                   = aws_subnet.tykbroker_app.id
+  vpc_security_group_ids      = [aws_security_group.tykbroker_app.id]
 
   user_data = templatefile("${path.module}/files/deploy_app.sh", {
     placeholder = var.placeholder
@@ -132,6 +132,6 @@ resource "aws_instance" "diamond_dogs" {
   })
 
   tags = {
-    Name = "${var.prefix}-diamond_dogs-instance"
+    Name = "${var.prefix}-tykbroker_app-instance"
   }
 }

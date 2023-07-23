@@ -1,9 +1,9 @@
 terraform {
   cloud {
-    organization = "ORG_NAME"
+    organization = "Stagewood_Consortium"
 
     workspaces {
-      name = "diamonddogs-app-useast1-dev"
+      name = "tykbroker-app-useast2-dev"
     }
   }
 }
